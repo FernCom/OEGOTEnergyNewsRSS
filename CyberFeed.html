@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>NCSC Reports News</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 10px;
+      background: #f9f9f9;
+      font-family: Arial, sans-serif;
+    }
+    #rss-news {
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #fff;
+    }
+    #rss-news h3 {
+      margin-top: 0;
+      color: #333;
+    }
+    #rss-list {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+    }
+    #rss-list li {
+      margin-bottom: 12px;
+    }
+    #rss-list a {
+      text-decoration: none;
+      color: #0078D4;
+      font-weight: bold;
+    }
+    #rss-list small {
+      color: gray;
+    }
+  </style>
+</head>
+<body>
+  <div id="rss-news">
+    <h3>📄 NCSC Reports</h3>
+    <ul id="rss-list"></ul>
+  </div>
+
+  <script>
+    // Your rss2json API key
+    const API_KEY = "x8fu87fsm5q4us61dwzg1nol79ufiyzpqem34p4z";
+    // NCSC report RSS feed
+    const RSS_FEED = "https://www.ncsc.gov.uk/api/1/services/v1/report-rss-feed.xml";
+    const RSS_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_FEED)}&api_key=${API_KEY}`;
+
+    fetch(RSS_URL)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Network response was not OK: " + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        const list = document.getElementById("rss-list");
+        if (!data.items || data.items.length === 0) {
+          list.innerHTML = "<li>No reports found.</li>";
+          return;
+        }
+        const items = data.items.slice(0, 5);
+        items.forEach(item => {
+          const li = document.createElement("li");
+          li.innerHTML = `
+            <a href="${item.link}" target="_blank">${item.title}</a><br>
+            <small>${new Date(item.pubDate).toLocaleDateString()}</small>
+          `;
+          list.appendChild(li);
+        });
+      })
+      .catch(err => {
+        console.error("Error fetching RSS:", err);
+        document.getElementById("rss-news").innerHTML = "⚠️ Unable to load reports feed.";
+      });
+  </script>
+</body>
+</html>
