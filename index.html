@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Renewable Energy News</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 10px; background: #f9f9f9; }
+    #rss-news { padding:1rem; border:1px solid #ddd; border-radius:8px; background:#fff; }
+    #rss-news h3 { margin-top:0; color:#0078D4; }
+    #rss-list { list-style:none; padding-left:0; margin:0; }
+    #rss-list li { margin-bottom:12px; }
+  </style>
+</head>
+<body>
+  <div id="rss-news">
+    <h3>🌍 Renewable Energy News</h3>
+    <ul id="rss-list"></ul>
+  </div>
+
+  <script>
+    const API_KEY = "x8fu87fsm5q4us61dwzg1nol79ufiyzpqem34p4z";
+    const RSS_FEED = "https://feeds.feedburner.com/Renews-RenewableEnergyNews";
+    const RSS_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(RSS_FEED)}&api_key=${API_KEY}`;
+
+    fetch(RSS_URL)
+      .then(response => response.json())
+      .then(data => {
+        const list = document.getElementById("rss-list");
+        const items = data.items.slice(0, 5);
+
+        items.forEach(item => {
+          const li = document.createElement("li");
+          li.innerHTML = `
+            <a href="${item.link}" target="_blank" style="text-decoration:none; color:#0078D4; font-weight:bold;">
+              ${item.title}
+            </a><br>
+            <small style="color:gray;">${new Date(item.pubDate).toLocaleDateString()}</small>
+          `;
+          list.appendChild(li);
+        });
+      })
+      .catch(err => {
+        document.getElementById("rss-news").innerHTML = "⚠️ Unable to load news feed.";
+        console.error(err);
+      });
+  </script>
+</body>
+</html>
